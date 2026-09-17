@@ -33,6 +33,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ github.event.release.tag_name || inputs.release_tag }}
+          REPOSITORY: ${{ github.repository }}
         shell: bash
         run: |
-          gh release upload "$RELEASE_TAG" PowerPointViewer.exe --clobber
+          set -euo pipefail
+          gh release upload \
+            "$RELEASE_TAG" \
+            PowerPointViewer.exe \
+            --repo "$REPOSITORY" \
+            --clobber
