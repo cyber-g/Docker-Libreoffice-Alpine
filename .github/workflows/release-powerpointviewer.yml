@@ -2,11 +2,6 @@ name: Release PowerPointViewer
 
 on:
   workflow_dispatch:
-    inputs:
-      release_tag:
-        description: Tag of the existing GitHub Release to update
-        required: true
-        type: string
   release:
     types: [published]
 
@@ -17,6 +12,9 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
       - name: Download and verify PowerPointViewer.exe
         shell: bash
         env:
@@ -37,8 +35,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          gh release upload \
-            "$RELEASE_TAG" \
-            PowerPointViewer.exe \
-            --repo "$REPOSITORY" \
+          gh release upload "$RELEASE_TAG" PowerPointViewer.exe \
+            --repo "${GITHUB_REPOSITORY}" \
             --clobber
