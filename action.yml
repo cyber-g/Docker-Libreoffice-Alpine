@@ -1,0 +1,7 @@
+name: Download and release PowerPointViewer
+
+description: Verify the archive checksum and upload PowerPointViewer.exe as a GitHub release asset.
+
+runs:
+  using: docker
+  image: Dockerfile
