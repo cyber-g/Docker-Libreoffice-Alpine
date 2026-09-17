@@ -1,0 +1,29 @@
+name: Release PowerPointViewer
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download and verify PowerPointViewer.exe
+        shell: bash
+        env:
+          URL: https://archive.org/download/PowerPointViewer_201801/PowerPointViewer.exe
+          EXPECTED: 249473568eba7a1e4f95498acba594e0f42e6581add4dead70c1dfb908a09423
+        run: |
+          set -euo pipefail
+          curl -fsSL -o PowerPointViewer.exe "$URL"
+          echo "$EXPECTED  PowerPointViewer.exe" | sha256sum -c -
+          echo "Checksum match confirmed"
+
+      - name: Upload asset to release
+        if: github.event_name == 'release' || github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          gh release upload "${GITHUB_REF_NAME:-${{ github.event.release.tag_name }}}" PowerPointViewer.exe --clobber
