@@ -2,8 +2,16 @@ name: Release PowerPointViewer
 
 on:
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Tag of the existing GitHub Release to update
+        required: true
+        type: string
   release:
     types: [published]
+
+permissions:
+  contents: write
 
 jobs:
   publish:
@@ -21,9 +29,10 @@ jobs:
           echo "Checksum match confirmed"
 
       - name: Upload asset to release
-        if: github.event_name == 'release' || github.ref_type == 'tag'
+        if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
         env:
           GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event.release.tag_name || inputs.release_tag }}
         shell: bash
         run: |
-          gh release upload "${GITHUB_REF_NAME:-${{ github.event.release.tag_name }}}" PowerPointViewer.exe --clobber
+          gh release upload "$RELEASE_TAG" PowerPointViewer.exe --clobber
